@@ -11,7 +11,9 @@ rm(list = ls())
 files <- c(
   'time_series_covid19_confirmed_global.csv',
   'time_series_covid19_deaths_global.csv',
-  'time_series_covid19_recovered_global.csv'
+  'time_series_covid19_recovered_global.csv',
+  'time_series_covid19_confirmed_US.csv',
+  'time_series_covid19_deaths_US.csv'
 )
 path <-
   paste0(
@@ -40,7 +42,8 @@ raw.data.confirmed <-
     confirmed = value,
     Date = variable
   ) %>%
-  mutate_if(is.factor, as.character)
+  mutate_if(is.factor, as.character) %>%
+  group_by(Country,Date) %>% summarise(confirmed=sum(confirmed))
 
 #deaths
 raw.data.deaths <-
@@ -53,7 +56,8 @@ raw.data.deaths <-
     deaths = value,
     Date = variable
   ) %>%
-  select(State, Country, Date, deaths)  %>% mutate_if(is.factor, as.character)
+  select(State, Country, Date, deaths)  %>% mutate_if(is.factor, as.character) %>%
+  group_by(Country,Date) %>% summarise(deaths=sum(deaths))
 
 #recovered
 raw.data.recovered <-
@@ -66,19 +70,20 @@ raw.data.recovered <-
     recovered = value,
     Date = variable
   ) %>%
-  select(State, Country, Date, recovered)  %>% mutate_if(is.factor, as.character)
+  select(State, Country, Date, recovered)  %>% mutate_if(is.factor, as.character) %>%
+  group_by(Country,Date) %>% summarise(recovered=sum(recovered))
 
 #combine in a single dataframe
 combined.data <-
-  raw.data.confirmed %>% left_join(raw.data.deaths, by = c('State', 'Country', 'Date')) %>%
-  left_join(raw.data.recovered, by = c('State', 'Country', 'Date')) %>% group_by_if(~
+  raw.data.confirmed %>% left_join(raw.data.deaths, by = c('Country', 'Date')) %>%
+  left_join(raw.data.recovered, by = c( 'Country', 'Date')) %>% group_by_if(~
                                                                                       !is.numeric(.)) %>%
   summarise(
     confirmed = sum(confirmed, na.rm = TRUE),
     deaths = sum(deaths, na.rm = TRUE),
     recovered = sum(recovered, na.rm = TRUE)
   ) %>% mutate(Date = as.Date(Date, format = '%m/%d/%y')) %>%
-  melt(id.vars = c('State', 'Country', 'Date')) %>% rename(Measure = variable) %>% mutate_if(is.factor, as.character) %>%
+  melt(id.vars = c( 'Country', 'Date')) %>% rename(Measure = variable) %>% mutate_if(is.factor, as.character) %>%
   arrange((Date)) %>%
   group_by_if(is.character) %>%
   mutate(daily_change = value - ifelse(is.na(lag(value)), 0, lag(value))) %>% ungroup()
@@ -86,6 +91,9 @@ combined.data <-
 combined.data$Country[combined.data$Country=='Taiwan*']<-'Taiwan'
 combined.data$Country[combined.data$Country=='United Arab Emirates']<-'UAE'
 combined.data$Country[combined.data$Country=='United Kingdom']<-'UK'
+combined.data$Country[combined.data$Country=='Korea, South']<-'South Korea'
 
+
+saveRDS(combined.data, file.path('covid-app','data', 'clean_long_data.rds'))
 #save clean  data
-write_csv(combined.data, file.path('covid-app','data', 'clean_long_data.csv'),na="")
+#write_csv(combined.data, file.path('covid-app','data', 'clean_long_data.csv'),na="")

@@ -5,9 +5,8 @@ account: maddyjha
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2063940
-bundleId: 2973822
+bundleId: 2981190
 url: https://maddyjha.shinyapps.io/covid-app/
-when: 1586146998.04203
+when: 1586270120.23521
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data/raw_data/time_series_covid19_confirmed_global.csv|data/raw_data/time_series_covid19_deaths_global.csv|data/raw_data/time_series_covid19_recovered_global.csv

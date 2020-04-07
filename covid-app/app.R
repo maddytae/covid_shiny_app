@@ -10,19 +10,19 @@ source("graphs.R")
 
 # Load data ----
 
-covid_data <- read_csv(file.path("data","clean_long_data.csv"))
+covid_data <- readRDS(file.path("data","clean_long_data.rds")) 
 
 
 top.n.country <- covid_data %>% filter(Measure == 'confirmed') %>%
   select(Country, daily_change)  %>% group_by(Country) %>%
   summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
 
-graph_data <- select(covid_data,-State) %>% group_by_if( ~
+graph_data <- covid_data %>% group_by_if( ~
                                                            !is.numeric(.)) %>%
   summarise(value = sum(value),
             daily_change = sum(daily_change))
 
-k <- select(covid_data,-State,-Country) %>% group_by_if( ~
+k <- select(covid_data,-Country) %>% group_by_if( ~
                                                            !is.numeric(.)) %>%
   summarise(value = sum(value),
             daily_change = sum(daily_change)) %>% mutate(Country = 'Global') %>%
@@ -71,17 +71,17 @@ server <- function(input, output) {
       input$graph_type,
       "log_scale" = covid_graph(
         graph_data = graph_data,
-        country_list = unique(c(top.n.country$Country[1:input$num], unlist(strsplit(input$text, ",")))),
+        country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ",")))),
         y_scale='log10'
       ),
       "original_scale" = covid_graph(
         graph_data = graph_data,
-        country_list = unique(c(top.n.country$Country[1:input$num], unlist(strsplit(input$text, ",")))),
+        country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ",")))),
         y_scale='original'
       ),
       "daily_change" =  covid_graph_daily_change(
         graph_data = graph_data,
-        country_list = unique(c(top.n.country$Country[1:input$num], unlist(strsplit(input$text, ","))))
+        country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ","))))
       )
     )
     plot_show
