@@ -117,8 +117,8 @@ server <- function(input, output) {
     combined.data<-combined.data()
     #message(glimpse(combined.data))
     top.n.country <- combined.data %>% filter(Measure == 'confirmed') %>%
-      select(Country, value)  %>% group_by(Country) %>%
-      summarise(value = sum(value)) %>% arrange(desc(value))
+      select(Country, daily_change)  %>% group_by(Country) %>%
+      summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
     top.n.country
   })
   

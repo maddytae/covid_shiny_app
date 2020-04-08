@@ -5,8 +5,8 @@ account: maddyjha
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2063940
-bundleId: 2984174
+bundleId: 2984329
 url: https://maddyjha.shinyapps.io/covid-app/
-when: 1586307355.20394
+when: 1586310371.62394
 asMultiple: FALSE
 asStatic: FALSE
