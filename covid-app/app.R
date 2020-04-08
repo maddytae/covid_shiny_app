@@ -15,7 +15,7 @@ ui <- fluidPage(titlePanel("Covid-19 Dashboard"),
                 sidebarLayout(
                   sidebarPanel(
                     helpText("Basic covid-19 status visualisation
-                              based on CSSE data from
+                              based on CSSE data(live link) from
                               Johns Hopkins University"),
                     
                     selectInput(
