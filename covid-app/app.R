@@ -128,9 +128,9 @@ make.combined.data<-reactive({
   
   saveRDS(combined.data.process,file.path('data','clean_long_data.rds'))
   ###save source files in csv for any analysis
-  write_csv(confirmed(),file.path('data',files[1]))
-  write_csv(deaths(),file.path('data',files[2]))
-  write_csv(recovered(),file.path('data',files[3]))
+  #write_csv(confirmed(),file.path('data',files[1]))
+  #write_csv(deaths(),file.path('data',files[2]))
+  #write_csv(recovered(),file.path('data',files[3]))
   
   })
 
@@ -145,33 +145,34 @@ top.n.country <- reactive({
     summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
   top.n.country
 })
-graph_data<-reactive({
- 
-  
-  combined.data<-combined.data()
-  
-  graph_data <- combined.data() %>% group_by_if( ~
-                                                   !is.numeric(.)) %>%
-    summarise(value = sum(value),
-              daily_change = sum(daily_change))
-  
-  k <- select(combined.data,-Country) %>% group_by_if( ~
-                                                         !is.numeric(.)) %>%
-    summarise(value = sum(value),
-              daily_change = sum(daily_change)) %>% mutate(Country = 'Global') %>%
-    select(Country, Date, Measure, value, daily_change)
-  
-  graph_data <- rbind(graph_data, k)
-  
-  graph_data$Date <- as.POSIXct(graph_data$Date)
-  
-  graph_data
-})
+
 
 
 # Server logic ----
 server <- function(input, output) {
   options(shiny.sanitize.errors = TRUE)
+  graph_data<-reactive({
+    
+    
+    combined.data<-combined.data()
+    
+    graph_data <- combined.data() %>% group_by_if( ~
+                                                     !is.numeric(.)) %>%
+      summarise(value = sum(value),
+                daily_change = sum(daily_change))
+    
+    k <- select(combined.data,-Country) %>% group_by_if( ~
+                                                           !is.numeric(.)) %>%
+      summarise(value = sum(value),
+                daily_change = sum(daily_change)) %>% mutate(Country = 'Global') %>%
+      select(Country, Date, Measure, value, daily_change)
+    
+    graph_data <- rbind(graph_data, k)
+    
+    graph_data$Date <- as.POSIXct(graph_data$Date)
+    
+    graph_data
+  })
   output$graph <- renderPlot({
     #message(glimpse(confirmed())) 
     top.n.country<-top.n.country()
