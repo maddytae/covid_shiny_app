@@ -9,23 +9,38 @@ ui <- fluidPage(titlePanel("Covid-19 Dashboard"),
                     
                     selectInput(
                       "graph_type",
-                      label = "Choose a graph to display",
+                      label = "Choose an item to display",
                       choices = c(
-                        "original_scale",
-                        "log_scale",
-                        "daily_change"
+                        "graph:original_scale",
+                        "graph:log_scale",
+                        "graph:daily_change",
+                        "data:current status"
                       ),
-                      selected = "daily_change"
+                      selected = "graph:daily_change"
                     ),
                     numericInput("num",
                                  label = "Select top n countries",
-                                 value = 20)
+                                 value = 5)
                     ,textInput("text", 
                                label = "Add additional countries
                              separated by comma", 
-                               value = "Singapore,India")
+                               value = "Canada,Singapore,India")
                   ),
                   
-                  mainPanel(plotOutput("graph"))
+              #    mainPanel(plotOutput("graph"))
+                  mainPanel(
+                    conditionalPanel(
+                      condition = "input.graph_type != 'data:current status'", 
+                      plotOutput("graph")),
+                    
+                    conditionalPanel(
+                      condition = "input.graph_type == 'data:current status'",
+                      dataTableOutput("tableView")))
+                  
+                  
+                  
+                  
+                  
+                  
                 ))
 ######
