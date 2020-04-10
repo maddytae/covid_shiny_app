@@ -6,8 +6,8 @@ covid_graph<-function(graph_data,country_list,y_scale){
   add_units <- function(n) {
     labels <- ifelse(n < 1000, n,  # less than thousands
                      ifelse(n < 1e6, paste0(round(n/1e3), 'k'),  # in thousands
-                            ifelse(n < 1e9, paste0(round(n/1e6), 'M'),  # in millions
-                                   ifelse(n < 1e12, paste0(round(n/1e9), 'B'), # in billions
+                            ifelse(n < 1e9, paste0(round(n/1e6,digits=2), 'M'),  # in millions
+                                   ifelse(n < 1e12, paste0(round(n/1e9,digits=2), 'B'), # in billions
                                           'too big!'
                                    ))))
     return(labels)
