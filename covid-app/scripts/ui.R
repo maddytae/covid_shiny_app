@@ -20,7 +20,7 @@ ui <- fluidPage(titlePanel("Covid-19 Dashboard"),
                     ),
                     numericInput("num",
                                  label = "Select top n countries",
-                                 value = 5)
+                                 value = 10)
                     ,textInput("text", 
                                label = "Add additional countries
                              separated by comma", 
