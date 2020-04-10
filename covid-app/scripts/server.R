@@ -42,6 +42,10 @@ server <- function(input, output) {
       "graph:daily_change" =  covid_graph_daily_change(
         graph_data = graph_data(),
         country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ","))))
+      ),
+      "graph:case_distribution" =  covid_graph_distribution(
+        graph_data = graph_data(),
+        country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ","))))
       )
     )
     plot_show

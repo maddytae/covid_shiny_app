@@ -14,6 +14,7 @@ ui <- fluidPage(titlePanel("Covid-19 Dashboard"),
                         "graph:original_scale",
                         "graph:log_scale",
                         "graph:daily_change",
+                        "graph:case_distribution",
                         "data:current status"
                       ),
                       selected = "graph:daily_change"

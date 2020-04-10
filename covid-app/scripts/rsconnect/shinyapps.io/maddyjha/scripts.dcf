@@ -1,0 +1,12 @@
+name: scripts
+title: scripts
+username:
+account: maddyjha
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2096259
+bundleId: 2997497
+url: https://maddyjha.shinyapps.io/scripts/
+when: 1586542763.1261
+asMultiple: FALSE
+asStatic: FALSE
