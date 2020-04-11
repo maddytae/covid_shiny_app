@@ -1,7 +1,8 @@
 
 
 
-covid_graph<-function(graph_data,country_list,y_scale){
+covid_graph<-function(graph_data,country_list,y_scale,title=TRUE){
+ 
   max_date<-graph_data$Date %>% max() %>% as.Date()
   add_units <- function(n) {
     labels <- ifelse(n < 1000, n,  # less than thousands
@@ -14,10 +15,10 @@ covid_graph<-function(graph_data,country_list,y_scale){
   }
 
   graph_data<- graph_data %>% select(-daily_change) %>% 
-    filter(Country %in% c('Global', country_list))
+    filter(Country %in% c(country_list))
   graph_data$Country <-
     factor(graph_data$Country ,
-           levels = c('Global', country_list)) #this controls facets order
+           levels = c( country_list)) #this controls facets order
 
   
  g1<-ggplot(data = graph_data, aes(x = Date, y = value, colour = Measure)) +
@@ -26,16 +27,31 @@ covid_graph<-function(graph_data,country_list,y_scale){
     scale_x_datetime(date_breaks = "1 month", labels = date_format("%b")) +
     labs(y="value", x = "Months")
  if(y_scale=='log10'){
-   g1<-g1 + scale_y_continuous(labels = add_units,trans = 'log10')+ 
-     ggtitle( paste0('Status as of: ',max_date,' (Log10 Scale)'))
+   g1<-g1 + scale_y_continuous(labels = add_units,trans = 'log10')
+   
+   if(title){
+   
+     g1<-g1+ggtitle( paste0('Status as of: ',max_date,' (Log10 Scale)'))}
+   
  } else{
-   g1<-g1 + scale_y_continuous(labels = add_units)+ 
-     ggtitle(paste0('Status as of: ',max_date,' (Linear Scale)'))
+   g1<-g1 + scale_y_continuous(labels = add_units)   
+   
+   if(title){
+     
+     g1<-g1+ggtitle( paste0('Status as of: ',max_date,' (Linear Scale)'))}
  }
+ if(!title & y_scale=='log10'){
+ g1<-g1+theme(aspect.ratio=2)+ggtitle('Log10')}
  
+ if(!title & y_scale!='log10'){
+   g1<-g1+theme(aspect.ratio=2)+ggtitle('Linear')
+   
+   }
+ 
+ g1
 }
 
-covid_graph_daily_change<-function(graph_data,country_list){
+covid_graph_daily_change<-function(graph_data,country_list,title=TRUE){
   max_date<-graph_data$Date %>% max() %>% as.Date()
   #message(max_date)
   add_units <- function(n) {
@@ -49,19 +65,31 @@ covid_graph_daily_change<-function(graph_data,country_list){
   }
 ######
   graph_data<- graph_data %>% select(-value) %>% rename(value=daily_change) %>% 
-    filter(Country %in% c('Global', country_list))
+    filter(Country %in% c( country_list))
   
   graph_data$Country <-
     factor(graph_data$Country ,
-           levels = c('Global', country_list)) #this controls facets order
+           levels = c(country_list)) #this controls facets order
   
     g1<-ggplot(data = graph_data, aes(x = Date, y = value, fill = Measure)) +
       facet_wrap(. ~ Country, scales = 'free_y') + geom_area( ) +
       scale_fill_manual(values = alpha(c("blue", "red", "green"), 0.5)) +
       scale_x_datetime(date_breaks = "1 month", labels = date_format("%b")) +
-      scale_y_continuous(labels = add_units) + ggtitle(paste0('Daily Change (Updated as of: ',max_date,')')) + 
+      scale_y_continuous(labels = add_units)  + 
       labs(y="Daily Change", x = "Months")
-}
+    
+    
+    if(title){
+      
+      g1<-g1+ ggtitle(paste0('Daily Change (Updated as of: ',max_date,')'))
+      }
+    if(!title){
+      g1<-g1+theme(aspect.ratio=2)+ggtitle('Daily Change')}
+    
+    
+    
+g1
+    }
 
 covid_graph_distribution<-function(graph_data,country_list){
   max_date<-graph_data$Date %>% max() %>% as.Date()
@@ -69,7 +97,7 @@ covid_graph_distribution<-function(graph_data,country_list){
   
  
  
-  graph_data<-graph_data %>% filter(Country %in% c('Global', country_list),
+  graph_data<-graph_data %>% filter(Country %in% c(country_list),
                            Date==max(Date)) %>% ungroup() %>%
     select(-Date,-daily_change)  %>%
     dcast(Country~Measure) %>% mutate(active=confirmed-deaths-recovered) %>% select(-confirmed) %>%
@@ -79,7 +107,7 @@ covid_graph_distribution<-function(graph_data,country_list){
   
   graph_data$Country <-
     factor(graph_data$Country ,
-           levels = c('Global', country_list)) #this controls  order
+           levels = c(country_list)) #this controls  order
   
   ggplot(data=graph_data,aes(x=Country,y=share,fill=Measure))+
     geom_bar(stat="identity") +

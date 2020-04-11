@@ -69,6 +69,7 @@ make.combined.data<-reactive({
   
   
   saveRDS(combined.data.process,file.path('data','clean_long_data.rds'))
+
   ###save source files in csv for any analysis
   #write_csv(confirmed(),file.path('data',files[1]))
   #write_csv(deaths(),file.path('data',files[2]))
