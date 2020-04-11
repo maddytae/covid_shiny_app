@@ -29,21 +29,21 @@ server <- function(input, output) {
     #write_csv(graph_data(),'graph_data.csv')
     plot_show <- switch(
       input$graph_type,
-      "graph:log_scale" = covid_graph(
+      "graph: log10_scale" = covid_graph(
         graph_data = graph_data(),
         country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ",")))),
         y_scale='log10'
       ),
-      "graph:original_scale" = covid_graph(
+      "graph: linear_scale" = covid_graph(
         graph_data = graph_data(),
         country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ",")))),
         y_scale='original'
       ),
-      "graph:daily_change" =  covid_graph_daily_change(
+      "graph: daily_change" =  covid_graph_daily_change(
         graph_data = graph_data(),
         country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ","))))
       ),
-      "graph:case_distribution" =  covid_graph_distribution(
+      "graph: case_distribution" =  covid_graph_distribution(
         graph_data = graph_data(),
         country_list = unique(c(top.n.country$Country[1:min(nrow(top.n.country),input$num)], unlist(strsplit(input$text, ","))))
       )

@@ -27,10 +27,10 @@ covid_graph<-function(graph_data,country_list,y_scale){
     labs(y="value", x = "Months")
  if(y_scale=='log10'){
    g1<-g1 + scale_y_continuous(labels = add_units,trans = 'log10')+ 
-     ggtitle( paste0('Current Situation in log10 scale',': Data updated as of ',max_date))
+     ggtitle( paste0('Status as of: ',max_date,' (Log10 Scale)'))
  } else{
    g1<-g1 + scale_y_continuous(labels = add_units)+ 
-     ggtitle(paste0('Current Situation in original scale',': Data updated as of ',max_date))
+     ggtitle(paste0('Status as of: ',max_date,' (Linear Scale)'))
  }
  
 }
@@ -59,7 +59,7 @@ covid_graph_daily_change<-function(graph_data,country_list){
       facet_wrap(. ~ Country, scales = 'free_y') + geom_area( ) +
       scale_fill_manual(values = alpha(c("blue", "red", "green"), 0.5)) +
       scale_x_datetime(date_breaks = "1 month", labels = date_format("%b")) +
-      scale_y_continuous(labels = add_units) + ggtitle(paste0('Daily Change',': Data updated as of ',max_date)) + 
+      scale_y_continuous(labels = add_units) + ggtitle(paste0('Daily Change (Updated as of: ',max_date,')')) + 
       labs(y="Daily Change", x = "Months")
 }
 
