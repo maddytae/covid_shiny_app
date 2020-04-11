@@ -1,9 +1,10 @@
 # Load packages ----
 library(shiny)
-library(tidyverse)
+library(dplyr)
 library(readr)
 library(scales)
 library(reshape2)
+library(ggplot2)
 library(DT)
 rm(list = ls())
 
