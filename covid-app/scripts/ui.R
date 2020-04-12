@@ -57,11 +57,8 @@ ui <- fluidPage(
                              plotOutput("graphdeep1"), 
                              plotOutput("graphdeep2"), 
                              plotOutput("graphdeep3"))
-               )
-               
-               # plotOutput("graphdeep1"),
-               # plotOutput("graphdeep2"),
-               # plotOutput("graphdeep3")
+               ),
+               plotOutput("graph_deep")
                
                ),
       id = "tabselected"

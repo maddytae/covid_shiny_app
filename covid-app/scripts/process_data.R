@@ -69,6 +69,67 @@ align_data<-reactive({
 
 combined.data<-reactive({
   align_data()
-  readRDS(file.path('data', 'clean_long_data.rds')) })
+  readRDS(file.path('data', 'clean_long_data.rds')) 
+  
+  })
+top.n.country <- reactive({
+  combined.data<-combined.data()  %>% select(-State)
+  top.n.country <- combined.data %>% filter(Measure == 'confirmed') %>%
+    select(Country, daily_change)  %>% group_by(Country) %>%
+    summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
+  top.n.country
+})
+
+top.n.country.state <- reactive({
+  combined.data<-combined.data()  
+  top.n.country <- combined.data %>% filter(Measure == 'confirmed') %>%
+    select(Country, daily_change)  %>% group_by(Country,State) %>%
+    summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
+  top.n.country.state
+})
+
+
+deep_dive_countries<-reactive({
+  deep_country<-combined.data() %>% filter(!is.na(State)) %>% select(Country) %>% unique() 
+  deep_country$Country
+})
+graph_data <- reactive({
+  
+  
+  
+  combined.data <- combined.data() %>% select(-State)
+  
+  graph_data <- combined.data %>% group_by_if(~
+                                                !is.numeric(.)) %>%
+    summarise(value = sum(value),
+              daily_change = sum(daily_change))
+  
+  k <- select(combined.data, -Country) %>% group_by_if(~
+                                                         !is.numeric(.)) %>%
+    summarise(value = sum(value),
+              daily_change = sum(daily_change)) %>% mutate(Country = 'Global') %>%
+    select(Country, Date, Measure, value, daily_change)
+  
+  graph_data <- rbind(graph_data, k)
+  
+  graph_data$Date <- as.POSIXct(graph_data$Date)
+  
+  graph_data
+  
+})
+
+graph_data_deep<-reactive({
+  combined.data.deep <- combined.data() 
+  graph_data_deep <- combined.data.deep %>% group_by_if(~
+                                                          !is.numeric(.)) %>%
+    summarise(value = sum(value),
+              daily_change = sum(daily_change))
+  graph_data_deep$Date <- as.POSIXct(graph_data_deep$Date)
+  
+  graph_data_deep
+  write_csv(graph_data_deep,"graph_data_deep.csv")
+})
+
+
 
 

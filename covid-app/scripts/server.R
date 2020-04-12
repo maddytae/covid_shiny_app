@@ -1,45 +1,11 @@
 server <- function(input, output) {
   options(shiny.sanitize.errors = TRUE)
-
-  deep_dive_countries<-reactive({
-    deep_country<-combined.data() %>% filter(!is.na(State)) %>% select(Country) %>% unique() 
-    deep_country$Country
-  })
-  graph_data <- reactive({
-   
-
-
-    combined.data <- combined.data() %>% select(-State)
-    
-    graph_data <- combined.data %>% group_by_if(~
-                                                    !is.numeric(.)) %>%
-      summarise(value = sum(value),
-                daily_change = sum(daily_change))
-    
-    k <- select(combined.data, -Country) %>% group_by_if(~
-                                                           !is.numeric(.)) %>%
-      summarise(value = sum(value),
-                daily_change = sum(daily_change)) %>% mutate(Country = 'Global') %>%
-      select(Country, Date, Measure, value, daily_change)
-    
-    graph_data <- rbind(graph_data, k)
-    
-    graph_data$Date <- as.POSIXct(graph_data$Date)
-    
-    graph_data
-    
-  })
   
-
-  
-  
-  
-  
-  
+  ####Status Report######
   output$graph <- renderPlot({
-    #message(glimpse(confirmed()))
     top.n.country <- top.n.country()
-    #write_csv(graph_data(), 'graph_data.csv')
+    
+    
     plot_show <- switch(
       input$graph_type,
       "graph: log10_scale" = covid_graph(
@@ -85,6 +51,11 @@ server <- function(input, output) {
                 ))))
     
   })
+
+  #####
+  
+  
+  ######Deep Dive#####
   
   output$graphdeep1 <- renderPlot({
     validate(need(input$deep_dive, 'Please provide a country!'))
@@ -95,7 +66,8 @@ server <- function(input, output) {
              Measure == 'confirmed',
              value > 100)
     first_100 <- k  %>% filter(Date == min(Date))
-    k <- graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
+    k <-
+      graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
     
     
     covid_graph(
@@ -113,7 +85,8 @@ server <- function(input, output) {
              Measure == 'confirmed',
              value > 100)
     first_100 <- k  %>% filter(Date == min(Date))
-    k <- graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
+    k <-
+      graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
     
     covid_graph(
       graph_data = k ,
@@ -130,7 +103,8 @@ server <- function(input, output) {
              Measure == 'confirmed',
              value > 100)
     first_100 <- k  %>% filter(Date == min(Date))
-    k <- graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
+    k <-
+      graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
     
     covid_graph_daily_change(
       graph_data = k,
@@ -139,14 +113,32 @@ server <- function(input, output) {
     )
   })
   
-  # Pulling the list of variable for choice of variable x
+  output$graph_deep <- renderPlot({
+    validate(need(input$deep_dive, ''))
+    k <- graph_data() %>% ungroup() %>%
+      filter(Country == input$deep_dive,
+             Measure == 'confirmed',
+             value > 100)
+    first_100 <- k  %>% filter(Date == min(Date))
+    k <-
+      graph_data() %>% ungroup() %>% filter(Date >= first_100$Date)
+    
+    covid_graph_daily_change(
+      graph_data = k,
+      country_list = input$deep_dive,
+      title = FALSE
+    )
+  })
+  
+  #This is rendering ui in deep dive from server itself;
   output$varx <- renderUI({
-    message(print(deep_dive_countries))
-    selectInput("deep_dive", "Provide a country for deep dive", choices=deep_dive_countries())
+    graph_data_deep()
+    selectInput("deep_dive", "Provide a country for deep dive", choices =
+                  deep_dive_countries())
   })
   
   
-  
+#####
   
   
   
