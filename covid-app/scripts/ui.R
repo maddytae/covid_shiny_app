@@ -32,16 +32,14 @@ ui <- fluidPage(
                  label = "Add additional countries
                              separated by comma", 
                  value = "Canada,Singapore,India")
-    ),
+    )
+    ,
     conditionalPanel(condition = "input.tabselected==2",
-                     textInput(
-                       "deep_dive",
-                       label = "Provide a country for deep dive",
-                       value = "US"
-                     ))
+                     uiOutput("varx"))
     
   ),
   mainPanel(
+   
     tabsetPanel(
       tabPanel("Status_Report", value = 1,
                conditionalPanel(
