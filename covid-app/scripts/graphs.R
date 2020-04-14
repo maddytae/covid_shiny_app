@@ -92,15 +92,23 @@ g1
     }
 
 covid_graph_distribution<-function(graph_data,country_list){
+  #write_csv(graph_data,"graph_data.csv")
+  message(country_list)
+  
   max_date<-graph_data$Date %>% max() %>% as.Date()
   graph_data<-ungroup(graph_data)
   
- 
+  
  
   graph_data<-graph_data %>% filter(Country %in% c(country_list),
                            Date==max(Date)) %>% ungroup() %>%
     select(-Date,-daily_change)  %>%
-    dcast(Country~Measure) %>% mutate(active=confirmed-deaths-recovered) %>% select(-confirmed) %>%
+    dcast(Country~Measure) 
+    
+    graph_data$recovered[is.na(graph_data$recovered)]<-0 #US don't have recovery data for states 
+  #and will cause issue otherwise
+    
+    graph_data<-graph_data %>% mutate(active=confirmed-deaths-recovered) %>% select(-confirmed) %>%
     melt(id.vars = c('Country')) %>% rename(Measure=variable)  %>% mutate(Measure=as.character(Measure)) %>%
     group_by(Country) %>% mutate(share=(round(value/sum(value),digits = 4))) %>%  select(-value) %>% 
     ungroup() 
