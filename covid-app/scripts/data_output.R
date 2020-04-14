@@ -18,3 +18,26 @@ mutate(confirmed=formatC(confirmed, format = "f", big.mark = ",", drop0trailing 
        Date=max_date) %>% select(Country,Date,confirmed,deaths,recovered)
 
 } 
+
+
+data_output_state<-function(graph_data,state_list){
+  
+ 
+  max_date<-graph_data$Date %>% max() %>% as.Date()
+
+
+  
+  graph_data<-graph_data %>% ungroup() %>% filter(Date==max(Date)) %>% select(-Date,-daily_change) %>%
+    
+  filter(State %in% c(state_list)) %>%
+ 
+    dcast(State~Measure) %>% 
+    arrange(desc(confirmed))%>%
+    mutate(confirmed=formatC(confirmed, format = "f", big.mark = ",", drop0trailing = TRUE),
+           deaths=formatC(deaths, format = "f", big.mark = ",", drop0trailing = TRUE),
+           recovered=formatC(recovered, format = "f", big.mark = ",", drop0trailing = TRUE),
+           Date=max_date) %>% select(State,Date,confirmed,recovered,deaths)
+  
+  
+  
+}

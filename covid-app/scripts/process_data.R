@@ -82,8 +82,8 @@ top.n.country <- reactive({
 
 top.n.country.state <- reactive({
   combined.data<-combined.data()  
-  top.n.country <- combined.data %>% filter(Measure == 'confirmed') %>%
-    select(Country, daily_change)  %>% group_by(Country,State) %>%
+  top.n.country.state <- combined.data %>% filter(Measure == 'confirmed') %>%
+    select(Country,State, daily_change)  %>% group_by(Country,State) %>%
     summarise(daily_change = sum(daily_change)) %>% arrange(desc(daily_change))
   top.n.country.state
 })
@@ -119,15 +119,20 @@ graph_data <- reactive({
 })
 
 graph_data_deep<-reactive({
+  
   combined.data.deep <- combined.data() 
   graph_data_deep <- combined.data.deep %>% group_by_if(~
                                                           !is.numeric(.)) %>%
     summarise(value = sum(value),
               daily_change = sum(daily_change))
+  
+
+  
+  
   graph_data_deep$Date <- as.POSIXct(graph_data_deep$Date)
   
   graph_data_deep
-  write_csv(graph_data_deep,"graph_data_deep.csv")
+  
 })
 
 

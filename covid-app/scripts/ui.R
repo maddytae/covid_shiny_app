@@ -35,7 +35,22 @@ ui <- fluidPage(
     )
     ,
     conditionalPanel(condition = "input.tabselected==2",
-                     uiOutput("varx"))
+                     uiOutput("varx"),
+                     numericInput("num_state",
+                                  label = "Select top n State/Province",
+                                  value = 10),selectInput(
+                                    "graph_type_deep",
+                                    label = "Choose an item to display",
+                                    choices = c(
+                                      "graph: linear_scale",
+                                      "graph: log10_scale",
+                                      "graph: daily_change",
+                                      "graph: case_distribution",
+                                      "data: current status"
+                                    ),
+                                    selected = "graph: daily_change"
+                                  )
+                     )
     
   ),
   mainPanel(
@@ -52,13 +67,14 @@ ui <- fluidPage(
       tabPanel("Deep_Dive", value = 2,
                
                
-               fluidRow(
-                 splitLayout(cellWidths = c("33%", "33%","34%"), 
-                             plotOutput("graphdeep1"), 
-                             plotOutput("graphdeep2"), 
-                             plotOutput("graphdeep3"))
-               ),
-               plotOutput("graph_deep")
+  
+               conditionalPanel(
+                 condition = "input.graph_type_deep != 'data: current status'", 
+                 plotOutput("graph_deep")),
+               
+               conditionalPanel(
+                 condition = "input.graph_type_deep == 'data: current status'",
+                 dataTableOutput("tableView_deep"))
                
                ),
       id = "tabselected"
